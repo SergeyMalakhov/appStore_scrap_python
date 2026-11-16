@@ -17,6 +17,8 @@ class Review:
     review: str
     review_id: str
     country: str
+    app_version: str = ""
+    developer_response: str = ""
 
     def to_row(self) -> dict:
         """Возвращает словарь-строку для CSV без служебного review_id."""
@@ -27,4 +29,6 @@ class Review:
             "title": self.title,
             "review": self.review,
             "country": self.country,
+            "app_version": self.app_version,
+            "developer_response": self.developer_response,
         }

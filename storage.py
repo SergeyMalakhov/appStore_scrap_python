@@ -10,7 +10,7 @@ from models import Review
 logger = logging.getLogger(__name__)
 
 # Колонки итогового CSV. review_id служебный и в файл не пишется.
-CSV_COLUMNS = ["author", "date", "rating", "title", "review", "country"]
+CSV_COLUMNS = ["author", "date", "rating", "title", "review", "country", "app_version", "developer_response"]
 
 
 def load_existing(path: str = CSV_PATH) -> set:
@@ -84,7 +84,7 @@ def save(reviews: list, path: str = CSV_PATH) -> None:
     new_rows = [review.to_row() for review in reviews]
     try:
         with Path(path).open("w", encoding="utf-8-sig", newline="") as file:
-            writer = csv.DictWriter(file, fieldnames=CSV_COLUMNS)
+            writer = csv.DictWriter(file, fieldnames=CSV_COLUMNS, restval="")
             writer.writeheader()
             writer.writerows(old_rows)
             writer.writerows(new_rows)
@@ -115,6 +115,8 @@ def load_all(path: str = CSV_PATH) -> list:
                     review=row["review"],
                     review_id="",
                     country=row["country"],
+                    app_version=row.get("app_version", ""),
+                    developer_response=row.get("developer_response", ""),
                 )
             )
         except (KeyError, TypeError, ValueError) as exc:

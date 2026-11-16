@@ -41,6 +41,8 @@ def parse_reviews(json_response: dict, country: str) -> list:
                     review=str(_label(entry, "content")),
                     review_id=str(_label(entry, "id")),
                     country=country,
+                    app_version=_label(entry, "im:version"),
+                    developer_response=_developer_response(entry),
                 )
             )
         except (AttributeError, TypeError, ValueError) as exc:
@@ -48,6 +50,20 @@ def parse_reviews(json_response: dict, country: str) -> list:
             logger.debug("Детали пропуска: %s", exc)
     logger.info("Разобрано %s отзывов из %s (страна %s)", len(reviews), len(entries), country)
     return reviews
+
+
+def _developer_response(entry: dict) -> str:
+    """Извлекает ответ разработчика, если он есть у отзыва."""
+    try:
+        response = entry["im:response"]
+        if isinstance(response, dict):
+            content = response.get("content")
+            if isinstance(content, dict):
+                return str(content.get("label", ""))
+            return str(content or "")
+    except (KeyError, TypeError):
+        pass
+    return ""
 
 
 def _label(entry: dict, *keys: str, default: str = "") -> str:

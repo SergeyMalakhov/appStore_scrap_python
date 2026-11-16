@@ -5,7 +5,7 @@ import time
 
 import requests
 
-from config import FEED_URL_TEMPLATE, REQUEST_PAUSE, REQUEST_TIMEOUT
+from config import DEFAULT_LANG, FEED_URL_TEMPLATE, REQUEST_PAUSE, REQUEST_TIMEOUT
 
 logger = logging.getLogger(__name__)
 
@@ -17,13 +17,15 @@ class RateLimitError(Exception):
     """Apple ограничил частоту запросов (HTTP 403)."""
 
 
-def fetch_page(country: str, page: int, app_id: str) -> dict:
+def fetch_page(country: str, page: int, app_id: str, lang: str = DEFAULT_LANG) -> dict:
     """Скачивает одну страницу отзывов фида Apple и возвращает её как dict.
 
     Args:
         country: код стора, например "ru" или "us".
         page: номер страницы фида (1..10).
         app_id: числовой идентификатор приложения.
+        lang: язык отзывов; пустая строка — без языкового фильтра.
+        lang: язык отзывов, например "ru" или "en_us".
 
     Returns:
         Разобранный в dict JSON фида.
@@ -34,7 +36,9 @@ def fetch_page(country: str, page: int, app_id: str) -> dict:
         ValueError: при невалидном JSON или неожиданном статусе ответа.
     """
     url = FEED_URL_TEMPLATE.format(country=country, page=page, app_id=app_id)
-    logger.info("Запрос фида: country=%s, page=%s, app_id=%s", country, page, app_id)
+    if lang:
+        url += f"?lang={lang}"
+    logger.info("Запрос фида: country=%s, page=%s, app_id=%s, lang=%s", country, page, app_id, lang)
     time.sleep(REQUEST_PAUSE)
 
     try:

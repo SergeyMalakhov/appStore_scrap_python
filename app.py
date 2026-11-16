@@ -6,7 +6,7 @@ import time
 import pandas as pd
 import streamlit as st
 
-from config import COUNTRIES, CSV_PATH, DEFAULT_PAGES, MAX_PAGES, MIN_PAGES
+from config import COUNTRIES, CSV_PATH, DEFAULT_LANG, DEFAULT_PAGES, LANGUAGES, MAX_PAGES, MIN_PAGES
 from fetcher import NetworkError, RateLimitError
 from scraper import collect_reviews
 from storage import CSV_COLUMNS, load_all
@@ -70,6 +70,14 @@ pages = st.slider(
     help="На каждой странице до 50 отзывов.",
 )
 
+lang = st.selectbox(
+    "Язык отзывов",
+    options=list(LANGUAGES.keys()),
+    index=list(LANGUAGES.keys()).index(DEFAULT_LANG),
+    format_func=lambda code: LANGUAGES[code]["label"],
+    help="Язык определяет сторы, из которых собираются отзывы: русские — из ru-стора, английские — из us/gb и т.д.",
+)
+
 col_run, col_refresh = st.columns(2)
 run_clicked = col_run.button("Собрать отзывы", type="primary")
 refresh_clicked = col_refresh.button("Обновить данные")
@@ -92,7 +100,7 @@ def run_collection() -> None:
         progress_bar.progress(fraction, text=f"Страница {page} из {total_pages}, страна {country}…")
 
     try:
-        reviews = collect_reviews(app_id, pages, CSV_PATH, on_progress)
+        reviews = collect_reviews(app_id, pages, CSV_PATH, lang, on_progress)
     except RateLimitError:
         st.error(LIMIT_MESSAGE)
         return
