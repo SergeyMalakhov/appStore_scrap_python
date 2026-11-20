@@ -94,6 +94,27 @@ def save(reviews: list, path: str = CSV_PATH) -> None:
     logger.info("Сохранено: %s старых + %s новых отзывов в %s", len(old_rows), len(new_rows), path)
 
 
+def clear_all(path: str = CSV_PATH) -> None:
+    """Полностью очищает накопленные отзывы: удаляет CSV-файл.
+
+    Args:
+        path: путь к файлу накопленных отзывов.
+
+    Raises:
+        ValueError: если файл не удалось удалить.
+    """
+    csv_path = Path(path)
+    if not csv_path.exists():
+        logger.info("Файл %s не найден — очищать нечего", path)
+        return
+    try:
+        csv_path.unlink()
+    except OSError as exc:
+        logger.error("Не удалось удалить %s: %s", path, exc)
+        raise ValueError(f"Файл {path} не удалось удалить. Закройте его в Excel и попробуйте снова.") from exc
+    logger.info("Файл %s удалён — набор отзывов сброшен", path)
+
+
 def load_all(path: str = CSV_PATH) -> list:
     """Читает весь CSV обратно в модели Review — например, для показа в интерфейсе.
 

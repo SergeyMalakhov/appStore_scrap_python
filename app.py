@@ -9,7 +9,7 @@ import streamlit as st
 from config import COUNTRIES, CSV_PATH, DEFAULT_LANG, DEFAULT_PAGES, LANGUAGES, MAX_PAGES, MIN_PAGES
 from fetcher import NetworkError, RateLimitError
 from scraper import collect_reviews
-from storage import CSV_COLUMNS, load_all
+from storage import CSV_COLUMNS, clear_all, load_all
 
 logger = logging.getLogger(__name__)
 if not logging.getLogger().handlers:
@@ -78,9 +78,21 @@ lang = st.selectbox(
     help="Язык определяет сторы, из которых собираются отзывы: русские — из ru-стора, английские — из us/gb и т.д.",
 )
 
-col_run, col_refresh = st.columns(2)
+col_run, col_refresh, col_clear = st.columns(3)
 run_clicked = col_run.button("Собрать отзывы", type="primary")
 refresh_clicked = col_refresh.button("Обновить данные")
+clear_clicked = col_clear.button("🗑 Сбросить все отзывы", help="Удаляет все накопленные отзывы (включая reviews.csv) и начинает с чистого листа.")
+
+
+def clear_collection() -> None:
+    """Очищает CSV и сбрасывает отзывы в сессии."""
+    try:
+        clear_all(CSV_PATH)
+    except ValueError as exc:
+        st.error(str(exc))
+        return
+    st.session_state["reviews"] = []
+    st.success("Все отзывы удалены — набор сброшен. Теперь можно собирать данные для другого приложения или языка.")
 
 
 def run_collection() -> None:
@@ -118,7 +130,9 @@ def run_collection() -> None:
     show_reviews(reviews)
 
 
-if run_clicked or refresh_clicked:
+if clear_clicked:
+    clear_collection()
+elif run_clicked or refresh_clicked:
     run_collection()
 elif st.session_state["reviews"]:
     st.subheader("Накопленные отзывы")
