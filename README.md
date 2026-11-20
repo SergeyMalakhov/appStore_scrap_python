@@ -2,6 +2,14 @@
 
 Python-приложение с веб-интерфейсом на Streamlit, которое выкачивает отзывы приложений из бесплатного публичного RSS-фида Apple для российского и американского сторов, удаляет повторы и накапливает их в CSV-файле.
 
+![GitHub Stars](https://img.shields.io/github/stars/SergeyMalakhov/appStore_scrap_python?style=flat&logo=github&color=yellow&label=%E2%AD%90%20stars)
+![GitHub Issues](https://img.shields.io/github/issues/SergeyMalakhov/appStore_scrap_python?style=flat&logo=github&color=blue&label=issues)
+
+
+
+🚀 **Живое демо без установки:**  
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://appstorescrappython-9ujthewbmzzg73qvm4eq4p.streamlit.app/)
+
 ## Ключевые возможности
 
 - 🌍 Сбор отзывов из двух сторов: Россия (`ru`) и США (`us`) — список стран задаётся в [`config.py`](config.py).
@@ -29,14 +37,17 @@ Python-приложение с веб-интерфейсом на Streamlit, к�
 
 ## Инструменты и технологии
 
+## Инструменты и технологии
+
 | Инструмент | Назначение | Документация |
 |---|---|---|
-| Python 3 | язык проекта | [MDN: Python-подобный синтаксис в JavaScript не нужен 🙂, но основы регулярных выражений](https://developer.mozilla.org/ru/docs/Web/JavaScript/Guide/Regular_expressions) и общие веб-стандарты описаны на [MDN Web Docs](https://developer.mozilla.org/ru/) |
-| [requests](https://pypi.org/project/requests/) | HTTP-запросы к RSS-фиду Apple | [MDN: HTTP](https://developer.mozilla.org/ru/docs/Web/HTTP) — статусы ответов, заголовки, таймауты |
-| [Streamlit](https://streamlit.io/) | веб-интерфейс | [MDN: Web-приложения](https://developer.mozilla.org/ru/docs/Learn/Web) — как устроен фронтенд, который рендерит Streamlit |
-| [pandas](https://pandas.pydata.org/) | таблицы, метрики, графики | [MDN: JSON](https://developer.mozilla.org/ru/docs/Learn/JavaScript/Objects/JSON) и [CSV-подобные данные](https://developer.mozilla.org/ru/docs/Web/API/Blob) — форматы обмена данными в вебе |
-| CSV (`utf-8-sig`) | хранение отзывов | [MDN: символ-кодировки (UTF-8, BOM)](https://developer.mozilla.org/ru/docs/Web/API/Encoding_API) |
-| RSS-фид Apple | источник данных | [MDN: XML/RSS-подобные форматы](https://developer.mozilla.org/ru/docs/Web/API/XMLHttpRequest) и [JSON](https://developer.mozilla.org/ru/docs/Learn/JavaScript/Objects/JSON) — фид отдаётся в JSON |
+| [Python 3](https://docs.python.org/3/) | язык проекта | [Официальный туториал](https://docs.python.org/3/tutorial/) и [справочник по стандартной библиотеке](https://docs.python.org/3/library/index.html) |
+| [requests](https://requests.readthedocs.io/en/latest/) | HTTP-запросы к RSS-фиду Apple | [Quickstart](https://requests.readthedocs.io/en/latest/user/quickstart/) — параметры запроса, таймауты, статусы ответов |
+| [Streamlit](https://docs.streamlit.io/) | веб-интерфейс | [API reference](https://docs.streamlit.io/develop/api-reference) — виджеты, прогресс-бар, метрики |
+| [pandas](https://pandas.pydata.org/docs/) | таблицы, метрики, графики | [User Guide](https://pandas.pydata.org/docs/user_guide/index.html) и [DataFrame.to_csv](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html) |
+| [CSV (utf-8-sig)](https://docs.python.org/3/library/csv.html) | хранение отзывов | [Модуль csv](https://docs.python.org/3/library/csv.html) и [кодировки в Python](https://docs.python.org/3/library/codecs.html#standard-encodings) |
+| [RSS-фид Apple](https://itunes.apple.com/rss) | источник данных | [Apple RSS Generator](https://itunes.apple.com/us/rss) — формат фида отзывов приложений |
+
 
 ## Требования
 
@@ -78,7 +89,12 @@ pandas
    ```
 
 ## Запуск
+### Онлайн (без установки)
 
+Откройте готовое приложение в браузере — ничего скачивать не нужно:
+https://appstorescrappython-9ujthewbmzzg73qvm4eq4p.streamlit.app/
+
+### Локально
 1. Запустите Streamlit-приложение:
 
    ```powershell
@@ -144,12 +160,19 @@ appStore_scrap_python/
 
 Служебный `review_id` используется только для дедупликации внутри запуска и в файл не пишется.
 
-Полезные ссылки для понимания форматов и веб-технологий, с которыми работает проект:
+Полезные ссылки, с которыми работает проект:
 
-- [MDN: Обзор HTTP](https://developer.mozilla.org/ru/docs/Web/HTTP) — статусы ответов, включая `403 Forbidden`;
-- [MDN: Работа с JSON](https://developer.mozilla.org/ru/docs/Learn/JavaScript/Objects/JSON) — структура фида Apple;
-- [MDN: Кодировки и Encoding API](https://developer.mozilla.org/ru/docs/Web/API/Encoding_API) — почему CSV пишется в `utf-8-sig`;
-- [MDN: Fetch API](https://developer.mozilla.org/ru/docs/Web/API/Fetch_API) — как те же запросы выглядели бы в браузере.
+- [RSS-фид отзывов Apple](https://itunes.apple.com/ru/rss/customerreviews/id=597986893/sortBy=mostRecent/json) — тот самый эндпоинт, по которому ходит `fetcher.py`: код страны, App ID, номер страницы и формат (`/json` или `/xml`) прямо в URL;
+- [Коды ответов HTTP](https://developer.mozilla.org/ru/docs/Web/HTTP/Status/403) — что означает 403 Forbidden, который Apple отдаёт при ограничении частоты запросов (см. `RateLimitError` в `fetcher.py`);
+- [Документация requests](https://requests.readthedocs.io/en/latest/user/quickstart/) — таймауты, параметры запроса и [исключения](https://requests.readthedocs.io/en/latest/api/#exceptions), из которых растут `NetworkError` и обработка невалидного JSON;
+- [Модуль csv в Python](https://docs.python.org/3/library/csv.html) — как устроены `reader`/`writer` и параметр `encoding` в `storage.py`;
+- [Кодировки и utf-8-sig](https://docs.python.org/3/library/codecs.html#utf-8-sig) — почему с BOM кириллица корректно открывается в Excel, а без него — с «кракозябрами»;
+- [App Store Connect API — customerReviews](https://developer.apple.com/documentation/appstoreconnectapi/customer-reviews) — «взрослый» вариант того же источника: требует JWT-авторизацию, но даёт всю историю отзывов вместо последних 500, которые отдаёт RSS-фид.
+
+### ❤️ Обратная связь
+❤️ Если проект сэкономил тебе хотя бы 30 минут — ты уже сделал мой день.
+⭐ Поставь звезду — это лучший «спасибо» для open‑source.
+🐛 Нашёл баг или хочется фичу? Заводи issue — допилим вместе.
 
 ## Лицензия и автор
 
@@ -158,4 +181,4 @@ appStore_scrap_python/
 **Автор:** SergeyMalakhov
 **Проект:** appStore_scrap_python (2026)
 
-Если проект оказался полезным — расскажите о нём или заведите issue с предложениями.
+
